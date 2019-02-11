@@ -103,6 +103,36 @@ class Config
     }
 
     /**
+     * @param string|null $environmentString
+     *
+     * @return ScriptPath[]
+     */
+    public function getDotenvPaths(string $environmentString = null): array
+    {
+        $paths = [];
+
+        $environments = [];
+
+        $environments[$this->defaultEnvironment] = $this->getEnvironment($this->defaultEnvironment);
+
+        if ($environmentString !== $this->defaultEnvironment) {
+            $environments[$environmentString] = $this->getEnvironment($environmentString);
+        }
+
+        foreach ($environments as $name => $environmentConfig) {
+            foreach ($environmentConfig->getDotenvPaths() as $path) {
+                if ($name !== $this->defaultEnvironment) {
+                    $paths[] = new ScriptPath($path, $name);
+                } else {
+                    $paths[] = new ScriptPath($path);
+                }
+            }
+        }
+
+        return $paths;
+    }
+
+    /**
      * @return string
      */
     public function getHeader()
