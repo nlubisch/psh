@@ -89,7 +89,7 @@ class Application
 
         try {
             foreach ($scriptNames as $scriptName) {
-                $executionExitCode = $this->execute($scriptFinder->findScriptByName($scriptName), $config);
+                $executionExitCode = $this->execute($scriptFinder->findScriptByName($scriptName), $config, $scriptFinder);
 
                 if ($executionExitCode !== self::RESULT_SUCCESS) {
                     return $executionExitCode;
@@ -155,12 +155,14 @@ class Application
     /**
      * @param Script $script
      * @param Config $config
+     * @param ScriptFinder $scriptFinder
+     *
      * @return int
      */
-    protected function execute(Script $script, Config $config): int
+    protected function execute(Script $script, Config $config, ScriptFinder $scriptFinder): int
     {
         $commands = $this->applicationFactory
-            ->createCommands($script);
+            ->createCommands($script, $scriptFinder);
 
         $logger = new ClimateLogger($this->cliMate, $this->duration);
         $executor = $this->applicationFactory
